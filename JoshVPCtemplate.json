@@ -113,24 +113,6 @@
         ]
       }
     }
-  },
-  "Outputs": {
-    "BucketNameOutput": {
-      "Description": "S3 bucket name",
-      "Value": { "Ref": "MyBucket" }
-    },
-    "BucketArnOutput": {
-      "Description": "S3 bucket ARN",
-      "Value": { "Fn::GetAtt": ["MyBucket", "Arn"] }
-    },
-    "VpcIdOutput": {
-      "Description": "VPC ID",
-      "Value": { "Ref": "JoshVPC" }
-    },
-    "RoleArnOutput": {
-      "Description": "CloudFormation Sync Role ARN",
-      "Value": { "Fn::GetAtt": ["CloudFormationSyncRole", "Arn"] }
-    }
   }
 }
 
