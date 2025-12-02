@@ -40,8 +40,8 @@
           "Statement": [
             {
               "Effect": "Allow",
-              "Principal": { "Service": ["codestar-connections.amazonaws.com"] },
-              "Action": ["sts:AssumeRole"]
+              "Principal": { "Service": "cloudformation.amazonaws.com" },
+              "Action": "sts:AssumeRole"
             }
           ]
         },
