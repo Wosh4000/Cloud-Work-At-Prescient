@@ -1,5 +1,5 @@
 {
-    "AWSTemplateFormatVersion": "2025-12-02",
+    "AWSTemplateFormatVersion": "2010-09-09",
     "Description": "CloudFormation template to create a VPC named JoshVPC and IAM role for GitHub-triggered CloudFormation",
     "Resources": {
         "JoshVPC": {
@@ -22,12 +22,12 @@
             "Properties": {
                 "RoleName": "CloudFormationGitHubSyncRole",
                 "AssumeRolePolicyDocument": {
-                    "Version": "2025-12-02",
+                    "Version": "2012-10-17",
                     "Statement": [
                         {
                             "Effect": "Allow",
                             "Principal": {
-                                "Service": ["cloudformation.amazonaws.com"]
+                                "Service": ["codeconnections.amazonaws.com"]
                             },
                             "Action": ["sts:AssumeRole"]
                         }
@@ -37,12 +37,16 @@
                     {
                         "PolicyName": "CloudFormationVPCSyncPolicy",
                         "PolicyDocument": {
-                            "Version": "2025-12-02",
+                            "Version": "2012-10-17",
                             "Statement": [
                                 {
                                     "Sid": "SyncToCloudFormation",
                                     "Effect": "Allow",
                                     "Action": [
+                                        "ec2:CreateVpc",
+                                        "ec2:DeleteVpc",
+                                        "ec2:CreateRouteTable",
+                                        "ec2:AssociateRouteTable",
                                         "cloudformation:CreateChangeSet",
                                         "cloudformation:DeleteChangeSet",
                                         "cloudformation:DescribeChangeSet",
