@@ -1,5 +1,5 @@
 {
-    "AWSTemplateFormatVersion": "2010-09-09",
+    "AWSTemplateFormatVersion": "2025-12-02",
     "Description": "CloudFormation template to create a VPC named JoshVPC with CIDR block",
     "Resources": {
         "JoshVPC": {
