@@ -1,5 +1,7 @@
 {
-    "Resource": {
+    "AWSTemplateFormatVersion": "2010-09-09",
+    "Description": "CloudFormation template to create a VPC named JoshVPC with CIDR block",
+    "Resources": {
         "JoshVPC": {
             "Type": "AWS::EC2::VPC",
             "Properties": {
