@@ -1,13 +1,6 @@
 {
   "AWSTemplateFormatVersion": "2010-09-09",
   "Description": "CloudFormation template to create a VPC named JoshVPC and IAM role for GitHub-triggered CloudFormation (improved)",
-  "Parameters": {
-    "VpcCidr": {
-      "Type": "String",
-      "Default": "10.68.0.0/18",
-      "Description": "CIDR block for the VPC"
-    }
-  },
   "Resources": {
     "MyBucket": {
       "Type": "AWS::S3::Bucket",
@@ -20,7 +13,7 @@
       "Type": "AWS::EC2::VPC",
       "DeletionPolicy": "Retain",
       "Properties": {
-        "CidrBlock": { "Ref": "VpcCidr" },
+        "CidrBlock": "10.68.0.0/18",
         "EnableDnsSupport": true,
         "EnableDnsHostnames": true,
         "Tags": [
