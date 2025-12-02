@@ -37,7 +37,7 @@
                     {
                         "PolicyName": "CloudFormationVPCSyncPolicy",
                         "PolicyDocument": {
-                            "Version": "2012-10-17",
+                            "Version": "2025-12-02",
                             "Statement": [
                                 {
                                     "Sid": "SyncToCloudFormation",
@@ -92,7 +92,7 @@
                                         "ec2:ModifyVpcAttribute",
                                         "ec2:CreateTags"
                                     ],
-                                    "Resource": { "Ref": "JoshVPC" }
+                                    "Resource": "*"
                                 }
                             ]
                         }
