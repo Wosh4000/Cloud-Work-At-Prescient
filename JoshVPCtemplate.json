@@ -4,17 +4,16 @@
   "Parameters": {
     "Environment": {
       "Type": "String",
-      "Description": "The environment for which the resources are being created (e.g., dev, test, prod)."
+      "Description": "The environment for my VPC."
     },
     "Stack": {
       "Type": "String",
-      "Description": "The CloudFormation stack."
+      "Description": "The Stack for my VPC."
     }
   },
   "Resources": {
     "MyBucket": {
       "Type": "AWS::S3::Bucket",
-      "DeletionPolicy": "Retain",
       "Properties": {
         "AccessControl": "Private"
       }
@@ -37,7 +36,7 @@
         "CidrBlock": "10.68.0.0/24",
         "AvailabilityZone": "eu-west-1a",
         "Tags": [
-          { "Key": "Name", "Value": "JoshPublicSubnet1" }
+          { "Key": "Name", "Value": { "Fn::Join": [ "-", [ "JoshPublicSubnet1", { "Ref": "Environment" }, { "Ref": "Stack" } ] ] } }
         ]
       }
     },
@@ -48,7 +47,7 @@
         "CidrBlock": "10.68.1.0/24",
         "AvailabilityZone": "eu-west-1b",
         "Tags": [
-          { "Key": "Name", "Value": "JoshPublicSubnet2" }
+          { "Key": "Name", "Value": { "Fn::Join": [ "-", [ "JoshPublicSubnet2", { "Ref": "Environment" }, { "Ref": "Stack" } ] ] } }
         ]
       }
     },
@@ -59,7 +58,7 @@
         "CidrBlock": "10.68.2.0/24",
         "AvailabilityZone": "eu-west-1a",
         "Tags": [
-          { "Key": "Name", "Value": "JoshPrivateSubnet1" }
+          { "Key": "Name", "Value": { "Fn::Join": [ "-", [ "JoshPrivateSubnet1", { "Ref": "Environment" }, { "Ref": "Stack" } ] ] } }
         ]
       }
     },
@@ -70,7 +69,7 @@
         "CidrBlock": "10.68.3.0/24",
         "AvailabilityZone": "eu-west-1b",
         "Tags": [
-          { "Key": "Name", "Value": "JoshPrivateSubnet2" }
+          { "Key": "Name", "Value": { "Fn::Join": [ "-", [ "JoshPrivateSubnet2", { "Ref": "Environment" }, { "Ref": "Stack" } ] ] } }
         ]
       }
     }
