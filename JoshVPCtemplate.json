@@ -1,6 +1,16 @@
 {
   "AWSTemplateFormatVersion": "2010-09-09",
   "Description": "CloudFormation template to create a VPC named JoshVPC",
+  "Parameters": {
+    "Environment": {
+      "Type": "String",
+      "Description": "The environment for which the resources are being created (e.g., dev, test, prod)."
+    },
+    "Stack": {
+      "Type": "String",
+      "Description": "The CloudFormation stack."
+    }
+  },
   "Resources": {
     "MyBucket": {
       "Type": "AWS::S3::Bucket",
@@ -13,92 +23,54 @@
       "Type": "AWS::EC2::VPC",
       "Properties": {
         "CidrBlock": "10.68.0.0/18",
-        "EnableDnsSupport": true,
         "EnableDnsHostnames": true,
+        "InstanceTenancy": "default",
         "Tags": [
           { "Key": "Name", "Value": "JoshVPC" }
         ]
       }
     },
-    "CloudFormationSyncRole": {
-      "Type": "AWS::IAM::Role",
-      "DeletionPolicy": "Retain",
+    "JoshPublicSubnet1": {
+      "Type": "AWS::EC2::Subnet",
       "Properties": {
-        "AssumeRolePolicyDocument": {
-          "Version": "2012-10-17",
-          "Statement": [
-            {
-              "Effect": "Allow",
-              "Principal": { "Service": "cloudformation.amazonaws.com" },
-              "Action": "sts:AssumeRole"
-            }
-          ]
-        },
-        "Policies": [
-          {
-            "PolicyName": "CloudFormationVPCSyncPolicy",
-            "PolicyDocument": {
-              "Version": "2012-10-17",
-              "Statement": [
-                {
-                  "Sid": "SyncToCloudFormation",
-                  "Effect": "Allow",
-                  "Action": [
-                    "ec2:CreateVpc",
-                    "ec2:DeleteVpc",
-                    "ec2:CreateRouteTable",
-                    "ec2:AssociateRouteTable",
-                    "cloudformation:CreateChangeSet",
-                    "cloudformation:DeleteChangeSet",
-                    "cloudformation:DescribeChangeSet",
-                    "cloudformation:DescribeStackEvents",
-                    "cloudformation:DescribeStacks",
-                    "cloudformation:ExecuteChangeSet",
-                    "cloudformation:GetTemplate",
-                    "cloudformation:ListChangeSets",
-                    "cloudformation:ListStacks",
-                    "cloudformation:ValidateTemplate"
-                  ],
-                  "Resource": "*"
-                },
-                {
-                  "Sid": "PolicyForManagedRules",
-                  "Effect": "Allow",
-                  "Action": ["events:PutRule", "events:PutTargets"],
-                  "Resource": "*",
-                  "Condition": {
-                    "StringEquals": {
-                      "events:ManagedBy": [
-                        "cloudformation.sync.codestar-connections.amazonaws.com"
-                      ]
-                    }
-                  }
-                },
-                {
-                  "Sid": "PolicyForDescribingRule",
-                  "Effect": "Allow",
-                  "Action": "events:DescribeRule",
-                  "Resource": "*"
-                },
-                {
-                  "Sid": "VPCAccess",
-                  "Effect": "Allow",
-                  "Action": [
-                    "ec2:DescribeVpcs",
-                    "ec2:DescribeSubnets",
-                    "ec2:DescribeRouteTables",
-                    "ec2:CreateSubnet",
-                    "ec2:CreateRoute",
-                    "ec2:AttachInternetGateway",
-                    "ec2:CreateInternetGateway",
-                    "ec2:ModifyVpcAttribute",
-                    "ec2:CreateTags"
-                  ],
-                  "Resource": "*"
-                }
-              ]
-            }
-          }
+        "VpcId": { "Ref": "JoshVPC" },
+        "CidrBlock": "10.68.0.0/24",
+        "AvailabilityZone": "eu-west-1a",
+        "Tags": [
+          { "Key": "Name", "Value": "JoshPublicSubnet1" }
+        ]
+      }
+    },
+    "JoshPublicSubnet2": {
+      "Type": "AWS::EC2::Subnet",
+      "Properties": {
+        "VpcId": { "Ref": "JoshVPC" },
+        "CidrBlock": "10.68.1.0/24",
+        "AvailabilityZone": "eu-west-1b",
+        "Tags": [
+          { "Key": "Name", "Value": "JoshPublicSubnet2" }
+        ]
+      }
+    },
+    "JoshPrivateSubnet1": {
+      "Type": "AWS::EC2::Subnet",
+      "Properties": {
+        "VpcId": { "Ref": "JoshVPC" },
+        "CidrBlock": "10.68.2.0/24",
+        "AvailabilityZone": "eu-west-1a",
+        "Tags": [
+          { "Key": "Name", "Value": "JoshPrivateSubnet1" }
+        ]
+      }
+    },
+    "JoshPrivateSubnet2": {
+      "Type": "AWS::EC2::Subnet",
+      "Properties": {
+        "VpcId": { "Ref": "JoshVPC" },
+        "CidrBlock": "10.68.3.0/24",
+        "AvailabilityZone": "eu-west-1b",
+        "Tags": [
+          { "Key": "Name", "Value": "JoshPrivateSubnet2" }
         ]
       }
     }
