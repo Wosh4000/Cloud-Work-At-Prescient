@@ -25,7 +25,7 @@
         "EnableDnsHostnames": true,
         "InstanceTenancy": "default",
         "Tags": [
-          { "Key": "Name", "Value": "JoshVPC" }
+          { "Key": "Name", "Value": { "Fn::Join": [ "-", [ "JoshVPC", { "Ref": "Environment" }, { "Ref": "Stack" } ] ] } }
         ]
       }
     },
@@ -71,6 +71,79 @@
         "Tags": [
           { "Key": "Name", "Value": { "Fn::Join": [ "-", [ "JoshPrivateSubnet2", { "Ref": "Environment" }, { "Ref": "Stack" } ] ] } }
         ]
+      }
+    },
+    "JoshInternetGateway" : {
+      "Type" : "AWS::EC2::InternetGateway",
+      "Properties" : {
+        "Tags" : [ { "Key" : "name", "Value" : { "Fn::Join" : [ "-", [ "JoshInternetGateway", { "Ref" : "Environment" }, { "Ref" : "Stack" } ] ] } } ]
+      }
+    },
+    "JoshInternetGatewayAttachment" : {
+      "Type" : "AWS::EC2::VPCGatewayAttachment",
+      "Properties" : {
+        "VpcId" : { "Ref" : "JoshVPC" },
+        "InternetGatewayId" : { "Ref" : "JoshInternetGateway" }
+      }
+    },
+    "PublicRouteTable" : {
+      "Type" : "AWS::EC2::RouteTable",
+        "Properties" : {
+          "VpcId" : { "Ref" : "JoshVPC" },
+          "Tags" : [ { "Key" : "name", "Value" : { "Fn::Join" : [ "-", [ "JoshPublicRouteTable", { "Ref" : "Environment" }, { "Ref" : "Stack" } ] ] } } ]
+        }
+    },
+    "PublicRoute" : {
+      "Type" : "AWS::EC2::Route",
+      "DependsOn" : "JoshInternetGatewayAttachment",
+      "Properties" : {
+        "RouteTableId" : { "Ref" : "PublicRouteTable" },
+        "DestinationCidrBlock" : "0.0.0.0/0", 
+        "GatewayId" : { "Ref" : "JoshInternetGateway" }
+      }
+    },
+    "PublicSubnet1RouteTableAssociation" : {
+      "Type" : "AWS::EC2::SubnetRouteTableAssociation",
+      "Properties" : {
+        "SubnetId" : { "Ref" : "JoshPublicSubnet1" },
+        "RouteTableId" : { "Ref" : "PublicRouteTable" }
+      }
+    },
+    "PublicSubnet2RouteTableAssociation" : {
+      "Type" : "AWS::EC2::SubnetRouteTableAssociation",
+      "Properties" : {
+        "SubnetId" : { "Ref" : "JoshPublicSubnet2" },
+        "RouteTableId" : { "Ref" : "PublicRouteTable" }
+      }
+    },
+    "PrivateRouteTable" : {
+      "Type" : "AWS::EC2::RouteTable",
+        "Properties" : {
+          "VpcId" : { "Ref" : "JoshVPC" },
+          "Tags" : [ { "Key" : "name", "Value" : { "Fn::Join" : [ "-", [ "JoshPrivateRouteTable", { "Ref" : "Environment" }, { "Ref" : "Stack" } ] ] } } ]
+        }
+    },
+    "PrivateRoute" : {
+      "Type" : "AWS::EC2::Route",
+      "Properties" : {
+        "RouteTableId" : { "Ref" : "PrivateRouteTable" },
+        "DestinationCidrBlock" : "0.0.0.0/0",
+        "NatGatewayId" : { "Ref" : "JoshNatGateway" }
+      }
+    },
+    "JoshNatGateway" : {
+      "Type" : "AWS::EC2::NatGateway",
+      "Properties" : {
+        "AllocationId" : { "Fn::GetAtt" : [ "JoshNatGatewayEIP", "AllocationId" ] },
+        "SubnetId" : { "Ref" : "JoshPublicSubnet1" },
+        "Tags" : [ { "Key" : "name", "Value" : { "Fn::Join" : [ "-", [ "JoshNatGateway", { "Ref" : "Environment" }, { "Ref" : "Stack" } ] ] } } ]
+      }
+    },
+    "JoshNatGatewayEIP" : {
+      "Type" : "AWS::EC2::EIP",
+      "Properties" : {
+        "Domain" : "vpc",
+        "Tags" : [ { "Key" : "name", "Value" : { "Fn::Join" : [ "-", [ "JoshNatGatewayEIP", { "Ref" : "Environment" }, { "Ref" : "Stack" } ] ] } } ]  
       }
     }
   }
