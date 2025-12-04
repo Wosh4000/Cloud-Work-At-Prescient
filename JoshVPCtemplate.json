@@ -274,7 +274,7 @@
     },
     "JoshApiDeployment": {
       "Type": "AWS::ApiGateway::Deployment",
-      "DependsOn": ["HelloGetMethod"],
+      "DependsOn": ["HelloGetMethod", "HelloLambdaApiPermission"],
       "Properties": {
         "RestApiId": { "Ref": "JoshAPIGateway" },
         "StageName": "prod"
