@@ -161,7 +161,135 @@
         "Domain" : "vpc",
         "Tags" : [ { "Key" : "name", "Value" : { "Fn::Join" : [ "-", [ "JoshNatGatewayEIP", { "Ref" : "Environment" }, { "Ref" : "Stack" } ] ] } } ]
       }
+    },
+    "LambdaBasicRole":{
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "ManagedPolicyArns": [
+          "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+          "arn:aws:iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole"
+        ],
+        "AssumeRolePolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Principal": {
+                "Service": [
+                  "lambda.amazonaws.com"
+                ]
+              },
+              "Action": [
+                "sts:AssumeRole"
+              ]
+            }
+          ]
+        },
+        "MaxSessionDuration": 3600,
+        "Path" : "/",
+        "RoleName": "lambda-base-role"
+      }
+    },
+    "LambdaSecurityGroup": {
+      "Type": "AWS::EC2::SecurityGroup",
+      "Properties": {
+        "GroupDescription": "Security group for Lambda inside VPC",
+        "VpcId": { "Ref": "JoshProjectVPC" },
+        "SecurityGroupEgress": [
+          { "IpProtocol": "-1", "CidrIp": "0.0.0.0/0" }
+        ],
+        "SecurityGroupIngress": [],
+        "Tags": [
+          { "Key": "Name", "Value": { "Fn::Join": ["-", ["LambdaSG", {"Ref": "Environment"}, {"Ref": "Stack"}]] } }
+        ]
+      }
+    },
+    "HelloLambdaFunction": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "FunctionName": "HelloLambdaFunction",
+        "Runtime": "python3.8",
+        "Handler": "index.lambda_handler",
+        "Code": {
+          "ZipFile": "def lambda_handler(event, context):\n    return {'statusCode': 200, 'body': 'Hello from Lambda!'}"
+        },
+        "Role": {
+          "Fn::GetAtt": ["LambdaBasicRole", "Arn"]
+        },
+        "Timeout": 10,
+        "VpcConfig": {
+          "SecurityGroupIds": [
+            { "Ref": "LambdaSecurityGroup" }
+          ],
+          "SubnetIds": [
+            { "Ref": "JoshPrivateSubnet1" },
+            { "Ref": "JoshPrivateSubnet2" }
+          ]
+        }
+      }
+    },
+    "JoshAPIGateway": {
+      "Type": "AWS::ApiGateway::RestApi",
+      "Properties": {
+        "Name": "JoshAPIGateway"
+      }
+    },
+    "HelloResource": {
+      "Type": "AWS::ApiGateway::Resource",
+      "Properties": {
+        "RestApiId": { "Ref": "JoshAPIGateway" },
+        "ParentId": { "Fn::GetAtt": ["JoshAPIGateway", "RootResourceId"] },
+        "PathPart": "hello"
+      }
+    },
+    "HelloGetMethod": {
+      "Type": "AWS::ApiGateway::Method",
+      "Properties": {
+        "RestApiId": { "Ref": "JoshAPIGateway" },
+        "ResourceId": { "Ref": "HelloResource" },
+        "HttpMethod": "GET",
+        "AuthorizationType": "NONE",
+        "Integration": {
+          "Type": "AWS_PROXY",
+          "IntegrationHttpMethod": "POST",
+          "Uri": {
+            "Fn::Sub": [
+              "arn:aws:apigateway:${Region}:lambda:path/2015-03-31/functions/${LambdaArn}/invocations",
+              {
+                "LambdaArn": { "Fn::GetAtt": ["HelloLambdaFunction", "Arn"] }
+              }
+            ]
+          }
+        }
+      }
+    },
+    "HelloLambdaApiPermission": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": { "Fn::GetAtt": ["HelloLambdaFunction", "Arn"] },
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": { "Fn::Sub": "arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${JoshApiGateway}/*/GET/hello" }
+      }
+    },
+    "JoshApiDeployment": {
+      "Type": "AWS::ApiGateway::Deployment",
+      "DependsOn": ["HelloGetMethod"],
+      "Properties": {
+        "RestApiId": { "Ref": "JoshAPIGateway" },
+        "StageName": "prod"
+      }
     }
-  }
+  },
+    "Outputs": {
+      "VPCId": {
+        "Description": "The VPC ID",
+        "Value": { "Ref": "JoshProjectVPC" }
+      },
+      "APIGatewayURL": {
+        "Description": "The URL of the API Gateway",
+        "Value": { "Fn::Sub": "https://${JoshAPIGateway}.execute-api.${AWS::Region}.amazonaws.com/prod/hello" }
+      }
+    }
 }
 
