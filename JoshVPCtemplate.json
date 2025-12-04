@@ -71,7 +71,7 @@
     "JoshInternetGateway" : {
       "Type" : "AWS::EC2::InternetGateway",
       "Properties" : {
-        "Tags" : [ { "Key" : "name", "Value" : { "Fn::Join" : [ "-", [ "JoshInternetGateway", { "Ref" : "Environment" }, { "Ref" : "Stack" } ] ] } } ]
+        "Tags" : [ { "Key" : "Name", "Value" : { "Fn::Join" : [ "-", [ "JoshInternetGateway", { "Ref" : "Environment" }, { "Ref" : "Stack" } ] ] } } ]
       }
     },
     "JoshInternetGatewayAttachment" : {
@@ -85,7 +85,7 @@
       "Type" : "AWS::EC2::RouteTable",
         "Properties" : {
           "VpcId" : { "Ref" : "JoshProjectVPC" },
-          "Tags" : [ { "Key" : "name", "Value" : { "Fn::Join" : [ "-", [ "JoshPublicRouteTable", { "Ref" : "Environment" }, { "Ref" : "Stack" } ] ] } } ]
+          "Tags" : [ { "Key" : "Name", "Value" : { "Fn::Join" : [ "-", [ "JoshPublicRouteTable", { "Ref" : "Environment" }, { "Ref" : "Stack" } ] ] } } ]
         }
     },
     "PublicRoute" : {
@@ -232,10 +232,10 @@
             "Stage": "prod"
           }
         ],
-      "ApiKeys": [
-        {
-          "KeyId": { "Ref": "JoshApiKey" },
-          "KeyType": "API_KEY"
+        "ApiKeys": [
+          {
+            "KeyId": { "Ref": "JoshApiKey" },
+            "KeyType": "API_KEY"
           }
         ]
       }
@@ -262,17 +262,16 @@
       }
     }
   },
-    "Outputs": {
-      "VPCId": {
-        "Description": "The VPC ID",
-        "Value": { "Ref": "JoshProjectVPC" }
-      },
-      "APIGatewayURL": {
-        "Description": "The URL of the API Gateway",
-        "Value": { "Fn::Sub": ["https://${ApiId}.execute-api.${AWS::Region}.amazonaws.com/prod/hello",
-        {"ApiId" : { "Ref": "JoshAPIGateway" }}
-        ] }
-      }
+  "Outputs": {
+    "VPCId": {
+      "Description": "The VPC ID",
+      "Value": { "Ref": "JoshProjectVPC" }
+    },
+    "APIGatewayURL": {
+      "Description": "The URL of the API Gateway",
+      "Value": { "Fn::Sub": ["https://${ApiId}.execute-api.${AWS::Region}.amazonaws.com/prod/hello",
+      {"ApiId" : { "Ref": "JoshAPIGateway" }}
+      ] }
     }
+  }
 }
-
