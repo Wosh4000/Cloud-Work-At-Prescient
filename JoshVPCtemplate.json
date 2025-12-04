@@ -12,16 +12,17 @@
     }
   },
   "Resources": {
-    "MyBucket": {
+    "JoshBucket": {
       "Type": "AWS::S3::Bucket",
       "Properties": {
         "AccessControl": "Private"
       }
     },
-    "JoshVPC": {
+    "JoshProjectVPC": {
       "Type": "AWS::EC2::VPC",
       "Properties": {
         "CidrBlock": "10.68.0.0/18",
+        "EnableDnsSupport": true,
         "EnableDnsHostnames": true,
         "InstanceTenancy": "default",
         "Tags": [
@@ -32,7 +33,7 @@
     "JoshPublicSubnet1": {
       "Type": "AWS::EC2::Subnet",
       "Properties": {
-        "VpcId": { "Ref": "JoshVPC" },
+        "VpcId": { "Ref": "JoshProjectVPC" },
         "CidrBlock": "10.68.0.0/24",
         "AvailabilityZone": "eu-west-1a",
         "Tags": [
@@ -43,7 +44,7 @@
     "JoshPublicSubnet2": {
       "Type": "AWS::EC2::Subnet",
       "Properties": {
-        "VpcId": { "Ref": "JoshVPC" },
+        "VpcId": { "Ref": "JoshProjectVPC" },
         "CidrBlock": "10.68.1.0/24",
         "AvailabilityZone": "eu-west-1b",
         "Tags": [
@@ -54,7 +55,7 @@
     "JoshPrivateSubnet1": {
       "Type": "AWS::EC2::Subnet",
       "Properties": {
-        "VpcId": { "Ref": "JoshVPC" },
+        "VpcId": { "Ref": "JoshProjectVPC" },
         "CidrBlock": "10.68.2.0/24",
         "AvailabilityZone": "eu-west-1a",
         "Tags": [
@@ -65,7 +66,7 @@
     "JoshPrivateSubnet2": {
       "Type": "AWS::EC2::Subnet",
       "Properties": {
-        "VpcId": { "Ref": "JoshVPC" },
+        "VpcId": { "Ref": "JoshProjectVPC" },
         "CidrBlock": "10.68.3.0/24",
         "AvailabilityZone": "eu-west-1b",
         "Tags": [
@@ -82,14 +83,14 @@
     "JoshInternetGatewayAttachment" : {
       "Type" : "AWS::EC2::VPCGatewayAttachment",
       "Properties" : {
-        "VpcId" : { "Ref" : "JoshVPC" },
+        "VpcId" : { "Ref" : "JoshProjectVPC" },
         "InternetGatewayId" : { "Ref" : "JoshInternetGateway" }
       }
     },
     "PublicRouteTable" : {
       "Type" : "AWS::EC2::RouteTable",
         "Properties" : {
-          "VpcId" : { "Ref" : "JoshVPC" },
+          "VpcId" : { "Ref" : "JoshProjectVPC" },
           "Tags" : [ { "Key" : "name", "Value" : { "Fn::Join" : [ "-", [ "JoshPublicRouteTable", { "Ref" : "Environment" }, { "Ref" : "Stack" } ] ] } } ]
         }
     },
@@ -119,16 +120,31 @@
     "PrivateRouteTable" : {
       "Type" : "AWS::EC2::RouteTable",
         "Properties" : {
-          "VpcId" : { "Ref" : "JoshVPC" },
+          "VpcId" : { "Ref" : "JoshProjectVPC" },
           "Tags" : [ { "Key" : "name", "Value" : { "Fn::Join" : [ "-", [ "JoshPrivateRouteTable", { "Ref" : "Environment" }, { "Ref" : "Stack" } ] ] } } ]
         }
     },
     "PrivateRoute" : {
       "Type" : "AWS::EC2::Route",
+      "DependsOn" : "JoshNatGateway",
       "Properties" : {
         "RouteTableId" : { "Ref" : "PrivateRouteTable" },
         "DestinationCidrBlock" : "0.0.0.0/0",
         "NatGatewayId" : { "Ref" : "JoshNatGateway" }
+      }
+    },
+    "PrivateSubnet1RouteTableAssociation" : {
+      "Type" : "AWS::EC2::SubnetRouteTableAssociation",
+      "Properties" : {
+        "SubnetId" : { "Ref" : "JoshPrivateSubnet1" },
+        "RouteTableId" : { "Ref" : "PrivateRouteTable" }
+      }
+    },
+    "PrivateSubnet2RouteTableAssociation" : {
+      "Type" : "AWS::EC2::SubnetRouteTableAssociation",
+      "Properties" : {
+        "SubnetId" : { "Ref" : "JoshPrivateSubnet2" },
+        "RouteTableId" : { "Ref" : "PrivateRouteTable" }
       }
     },
     "JoshNatGateway" : {
@@ -143,7 +159,7 @@
       "Type" : "AWS::EC2::EIP",
       "Properties" : {
         "Domain" : "vpc",
-        "Tags" : [ { "Key" : "name", "Value" : { "Fn::Join" : [ "-", [ "JoshNatGatewayEIP", { "Ref" : "Environment" }, { "Ref" : "Stack" } ] ] } } ]  
+        "Tags" : [ { "Key" : "name", "Value" : { "Fn::Join" : [ "-", [ "JoshNatGatewayEIP", { "Ref" : "Environment" }, { "Ref" : "Stack" } ] ] } } ]
       }
     }
   }
