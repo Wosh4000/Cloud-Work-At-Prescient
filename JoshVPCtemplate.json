@@ -149,6 +149,7 @@
     },
     "JoshNatGateway" : {
       "Type" : "AWS::EC2::NatGateway",
+      "DependsOn" : "JoshNatGatewayEIP",
       "Properties" : {
         "AllocationId" : { "Fn::GetAtt" : [ "JoshNatGatewayEIP", "AllocationId" ] },
         "SubnetId" : { "Ref" : "JoshPublicSubnet1" },
