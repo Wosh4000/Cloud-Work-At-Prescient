@@ -231,13 +231,15 @@
             "ApiId": { "Ref": "JoshAPIGateway" },
             "Stage": "prod"
           }
-        ],
-        "ApiKeys": [
-          {
-            "KeyId": { "Ref": "JoshApiKey" },
-            "KeyType": "API_KEY"
-          }
         ]
+      }
+    },
+    "JoshUsagePlanKey": {
+      "Type": "AWS::ApiGateway::UsagePlanKey",
+      "Properties": {
+        "KeyId": { "Ref": "JoshApiKey" },
+        "KeyType": "API_KEY",
+        "UsagePlanId": { "Ref": "JoshUsagePlan" }
       }
     },
     "HelloLambdaApiPermission": {
