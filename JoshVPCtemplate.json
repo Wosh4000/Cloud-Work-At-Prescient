@@ -117,52 +117,6 @@
         "RouteTableId" : { "Ref" : "PublicRouteTable" }
       }
     },
-    "PrivateRouteTable" : {
-      "Type" : "AWS::EC2::RouteTable",
-        "Properties" : {
-          "VpcId" : { "Ref" : "JoshProjectVPC" },
-          "Tags" : [ { "Key" : "name", "Value" : { "Fn::Join" : [ "-", [ "JoshPrivateRouteTable", { "Ref" : "Environment" }, { "Ref" : "Stack" } ] ] } } ]
-        }
-    },
-    "PrivateRoute" : {
-      "Type" : "AWS::EC2::Route",
-      "DependsOn" : "JoshNatGateway",
-      "Properties" : {
-        "RouteTableId" : { "Ref" : "PrivateRouteTable" },
-        "DestinationCidrBlock" : "0.0.0.0/0",
-        "NatGatewayId" : { "Ref" : "JoshNatGateway" }
-      }
-    },
-    "PrivateSubnet1RouteTableAssociation" : {
-      "Type" : "AWS::EC2::SubnetRouteTableAssociation",
-      "Properties" : {
-        "SubnetId" : { "Ref" : "JoshPrivateSubnet1" },
-        "RouteTableId" : { "Ref" : "PrivateRouteTable" }
-      }
-    },
-    "PrivateSubnet2RouteTableAssociation" : {
-      "Type" : "AWS::EC2::SubnetRouteTableAssociation",
-      "Properties" : {
-        "SubnetId" : { "Ref" : "JoshPrivateSubnet2" },
-        "RouteTableId" : { "Ref" : "PrivateRouteTable" }
-      }
-    },
-    "JoshNatGateway" : {
-      "Type" : "AWS::EC2::NatGateway",
-      "DependsOn" : "JoshNatGatewayEIP",
-      "Properties" : {
-        "AllocationId" : { "Fn::GetAtt" : [ "JoshNatGatewayEIP", "AllocationId" ] },
-        "SubnetId" : { "Ref" : "JoshPublicSubnet1" },
-        "Tags" : [ { "Key" : "name", "Value" : { "Fn::Join" : [ "-", [ "JoshNatGateway", { "Ref" : "Environment" }, { "Ref" : "Stack" } ] ] } } ]
-      }
-    },
-    "JoshNatGatewayEIP" : {
-      "Type" : "AWS::EC2::EIP",
-      "Properties" : {
-        "Domain" : "vpc",
-        "Tags" : [ { "Key" : "name", "Value" : { "Fn::Join" : [ "-", [ "JoshNatGatewayEIP", { "Ref" : "Environment" }, { "Ref" : "Stack" } ] ] } } ]
-      }
-    },
     "LambdaBasicRole":{
       "Type": "AWS::IAM::Role",
       "Properties": {
@@ -271,7 +225,7 @@
         "Action": "lambda:InvokeFunction",
         "FunctionName": { "Fn::GetAtt": ["HelloLambdaFunction", "Arn"] },
         "Principal": "apigateway.amazonaws.com",
-        "SourceArn": { "Fn::Sub": ["arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${JoshApiGateway}/*/GET/hello",
+        "SourceArn": { "Fn::Sub": ["arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${ApiId}/*/GET/hello",
         {"ApiId" : { "Ref": "JoshAPIGateway" }}] }
       }
     },
@@ -294,7 +248,7 @@
       },
       "APIGatewayURL": {
         "Description": "The URL of the API Gateway",
-        "Value": { "Fn::Sub": ["https://${JoshAPIGateway}.execute-api.${AWS::Region}.amazonaws.com/prod/hello",
+        "Value": { "Fn::Sub": ["https://${ApiId}.execute-api.${AWS::Region}.amazonaws.com/prod/hello",
         {"ApiId" : { "Ref": "JoshAPIGateway" }}
         ] }
       }
