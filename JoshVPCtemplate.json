@@ -12,12 +12,6 @@
     }
   },
   "Resources": {
-    "JoshBucket": {
-      "Type": "AWS::S3::Bucket",
-      "Properties": {
-        "AccessControl": "Private"
-      }
-    },
     "JoshProjectVPC": {
       "Type": "AWS::EC2::VPC",
       "Properties": {
