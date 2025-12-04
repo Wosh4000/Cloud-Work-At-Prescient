@@ -270,7 +270,8 @@
         "Action": "lambda:InvokeFunction",
         "FunctionName": { "Fn::GetAtt": ["HelloLambdaFunction", "Arn"] },
         "Principal": "apigateway.amazonaws.com",
-        "SourceArn": { "Fn::Sub": "arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${JoshApiGateway}/*/GET/hello" }
+        "SourceArn": { "Fn::Sub": ["arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${JoshApiGateway}/*/GET/hello",
+        {"ApiId" : { "Ref": "JoshAPIGateway" }}] }
       }
     },
     "JoshApiDeployment": {
