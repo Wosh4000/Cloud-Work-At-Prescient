@@ -236,10 +236,10 @@
         {
           "KeyId": { "Ref": "JoshApiKey" },
           "KeyType": "API_KEY"
-        }
-      ]
-    }
-  },
+          }
+        ]
+      }
+    },
     "HelloLambdaApiPermission": {
       "Type": "AWS::Lambda::Permission",
       "Properties": {
