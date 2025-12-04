@@ -223,6 +223,7 @@
     },
     "JoshUsagePlan": {
       "Type": "AWS::ApiGateway::UsagePlan",
+      "DependsOn": "JoshApiDeployment",
       "Properties": {
         "UsagePlanName": { "Fn::Join": ["-", ["JoshUsagePlan", { "Ref": "Environment" }, { "Ref": "Stack" }]] },
         "ApiStages": [
