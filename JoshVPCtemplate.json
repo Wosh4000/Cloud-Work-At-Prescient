@@ -210,7 +210,7 @@
           "IntegrationHttpMethod": "POST",
           "Uri": {
             "Fn::Sub": [
-              "arn:aws:apigateway:${Region}:lambda:path/2015-03-31/functions/${LambdaArn}/invocations",
+              "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${LambdaArn}/invocations",
               {
                 "LambdaArn": { "Fn::GetAtt": ["HelloLambdaFunction", "Arn"] }
               }
