@@ -1,8 +1,5 @@
-{
-  "template-file-path": "JoshVPCtemplate.json",
-  "parameters": {
-    "Environment": "test",
-    "Stack": "v1"
-  },
-  "tags": {}
-}
+template-file-path: JoshVPCtemplate.json
+parameters:
+  Environment: Test
+  Stack: v1
+tags: {}
