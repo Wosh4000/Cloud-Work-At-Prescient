@@ -199,6 +199,7 @@
         "ResourceId": { "Ref": "HelloResource" },
         "HttpMethod": "GET",
         "AuthorizationType": "NONE",
+        "ApiKeyRequired": true,
         "Integration": {
           "Type": "AWS_PROXY",
           "IntegrationHttpMethod": "POST",
@@ -213,6 +214,31 @@
         }
       }
     },
+    "JoshApiKey": {
+      "Type": "AWS::ApiGateway::ApiKey",
+      "Properties": {
+        "Name": { "Fn::Join": ["-", ["JoshApiKey", {"Ref": "Environment"}, {"Ref": "Stack"}]] },
+        "Enabled": true
+      }
+    },
+    "JoshUsagePlan": {
+      "Type": "AWS::ApiGateway::UsagePlan",
+      "Properties": {
+        "UsagePlanName": { "Fn::Join": ["-", ["JoshUsagePlan", { "Ref": "Environment" }, { "Ref": "Stack" }]] },
+        "ApiStages": [
+          {
+            "ApiId": { "Ref": "JoshAPIGateway" },
+            "Stage": "prod"
+          }
+        ],
+      "ApiKeys": [
+        {
+          "KeyId": { "Ref": "JoshApiKey" },
+          "KeyType": "API_KEY"
+        }
+      ]
+    }
+  },
     "HelloLambdaApiPermission": {
       "Type": "AWS::Lambda::Permission",
       "Properties": {
