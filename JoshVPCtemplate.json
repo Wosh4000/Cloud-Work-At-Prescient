@@ -294,7 +294,9 @@
       },
       "APIGatewayURL": {
         "Description": "The URL of the API Gateway",
-        "Value": { "Fn::Sub": "https://${JoshAPIGateway}.execute-api.${AWS::Region}.amazonaws.com/prod/hello" }
+        "Value": { "Fn::Sub": ["https://${JoshAPIGateway}.execute-api.${AWS::Region}.amazonaws.com/prod/hello",
+        {"ApiId" : { "Ref": "JoshAPIGateway" }}
+        ] }
       }
     }
 }
